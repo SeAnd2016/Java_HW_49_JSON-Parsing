@@ -8,6 +8,8 @@ import java.math.*;
 import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -65,18 +67,21 @@ public class Main {
   			  
   			  WebDriverWait wait15 = new WebDriverWait(driver, 15);
               
-              driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+              //driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
               driver.get(url);
               
-              String tilte = driver.getTitle();
+              //String tilte = driver.getTitle();
               //System.out.println(tilte);
 
               // All-New Echo Dot (2nd Generation) - Black
               
-              //WebElement p_t = wait15.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"productTitle\"]")));
-              //String product_title = (String) ((p_t.getText()));
+              WebElement p_t = wait15.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//*[@id=\"productTitle\"]")));
+              //String product_title = (String) ((p_t.getText().matches([^\s]([A-Za-z\s\d\(\)\-])*[^\s])));
+              String product_title = (String) ((p_t.getText()));
+              //String product_title = tilte;
               
-              String product_title = tilte;
+              Pattern pattern = Pattern.compile("[^\\s]([A-Za-z\\s\\d\\(\\)\\-])*[^\\s]");
+              Matcher matcher = pattern.matcher(product_title);
               
               //System.out.println(product_title);
               
@@ -131,10 +136,12 @@ public class Main {
               ////////////////////////////////////////////////////////////////////////////////
              
        	   	  double eur_price = new BigDecimal(original_price * rate2).setScale(2, RoundingMode.HALF_UP).doubleValue();
-              System.out.println("Item: " + product_title + "; "
+              
+       	      if (matcher.find()) {
+       	   	  System.out.println("Item: " + matcher.group() + "; "
                                           + "US Price: " + us_currency_symbol + original_price + "; "
                                           + "for country: " + country_name + "; "
-                                          + "Local Price: " + currency_symbol + eur_price);
+                                          + "Local Price: " + currency_symbol + eur_price);}
 
     }
 }
